@@ -1,6 +1,7 @@
-# Uncomment to suppress warnings coming from external libraries.
+# Suppress warnings coming from external libraries (the drm-uapi-helper and
+# MDAPI headers).
 #
-#cc.internal.scope = current
+cc.internal.scope = current
 
 cxx.std = latest
 
