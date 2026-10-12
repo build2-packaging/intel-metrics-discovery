@@ -1,0 +1,26 @@
+--- md_driver_ifc_linux_common.cpp.orig	2026-10-12 03:04:08.586555700 +0200
++++ md_driver_ifc_linux_common.cpp	2026-10-12 03:29:37.754790400 +0200
+@@ -11,7 +11,10 @@
+ //     Abstract:   C++ common implementation for Linux
+ 
+ #include "md_driver_ifc_linux_perf.h"
++#include "xe_drm_config.h"
++#ifdef INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OAM
+ #include "md_driver_ifc_linux_xe.h"
++#endif
+ #include "md_adapter.h"
+ #include "md_oa_concurrent_group.h"
+ #include "md_metrics_device.h"
+@@ -227,8 +230,12 @@
+                 break;
+ 
+             case DRM_VERSION_XE:
++#ifdef INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OAM
+                 MD_LOG( LOG_INFO, "Initializing XE KMD..." );
+                 driverInterface = new( std::nothrow ) CDriverInterfaceLinuxXe( adapterHandle );
++#else
++                MD_LOG( LOG_ERROR, "ERROR: XE KMD is not supported by this build!" );
++#endif
+                 break;
+ 
+             default:
