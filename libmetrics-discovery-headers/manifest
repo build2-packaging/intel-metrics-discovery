@@ -1,16 +1,16 @@
 : 1
 name: libmetrics-discovery-headers
-version: 0.1.0-a.0.z
+version: 1.16.197-a.0.z
 type: lib,binless
 language: c++
-project: build2-intel-metrics-discovery
-summary: Intel(R) Metrics Discovery Application Programming Interface
+project: intel-metrics-discovery
+summary: Intel Metrics Discovery API (MDAPI) C++ header
+topics: intel gpu, performance counters, profiling, mdapi
 license: MIT ; MIT License.
 description-file: README.md
 package-description-file: PACKAGE-README.md
-url: https://example.org/upstream
-email: upstream@example.org
-package-url: https://github.com/build2-packaging/build2-intel-metrics-discovery
+url: https://github.com/intel/metrics-discovery
+package-url: https://github.com/build2-packaging/intel-metrics-discovery
 package-email: packaging@build2.org ; Mailing list.
 depends: * build2 >= 0.18.0
 depends: * bpkg >= 0.18.0
