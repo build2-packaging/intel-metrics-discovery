@@ -3,7 +3,9 @@ impl_libs = # Implementation dependencies.
 import intf_libs += libmetrics-discovery-headers%lib{metrics-discovery-headers}
 import impl_libs += libdrm-uapi-helper%lib{drm-uapi-helper}
 
-lib{igdmd}: {hxx h cxx c}{** -xe_drm_config} hxx{xe_drm_config} \
+# Note that the C and C++ headers share the .h extension, so list them once.
+#
+lib{igdmd}: {hxx cxx c}{** -xe_drm_config} hxx{xe_drm_config} \
             $impl_libs $intf_libs
 
 # Detect the system kernel xe uAPI that the xe kernel mode driver interface
