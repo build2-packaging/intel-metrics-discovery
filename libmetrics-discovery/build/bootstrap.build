@@ -1,0 +1,7 @@
+project = libmetrics-discovery
+
+using version
+using config
+using test
+using install
+using dist

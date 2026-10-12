@@ -1,2 +1,5 @@
 : 1
 location: libmetrics-discovery-headers/
+
+:
+location: libmetrics-discovery/
