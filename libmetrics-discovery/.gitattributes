@@ -1,0 +1,4 @@
+src/instrumentation/metrics_discovery/codegen symlink=dir
+src/instrumentation/metrics_discovery/common symlink=dir
+src/instrumentation/metrics_discovery/linux/inc symlink=dir
+src/instrumentation/utils symlink=dir
