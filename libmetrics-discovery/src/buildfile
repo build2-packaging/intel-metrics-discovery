@@ -1,8 +1,9 @@
 intf_libs = # Interface dependencies.
 impl_libs = # Implementation dependencies.
-#import xxxx_libs += libhello%lib{hello}
+import intf_libs += libmetrics-discovery-headers%lib{metrics-discovery-headers}
+import impl_libs += libdrm-uapi-helper%lib{drm-uapi-helper}
 
-lib{metrics-discovery}: {hxx h cxx c}{**} $impl_libs $intf_libs
+lib{igdmd}: {hxx h cxx c}{**} $impl_libs $intf_libs
 
 # Build options.
 #
@@ -11,33 +12,52 @@ src_pfx = [dir_path] $src_root/src/
 
 cc.poptions =+ "-I$out_pfx" "-I$src_pfx"
 
-#obja{*}: cc.poptions += -DLIBMETRICS_DISCOVERY_STATIC_BUILD
-#objs{*}: cc.poptions += -DLIBMETRICS_DISCOVERY_SHARED_BUILD
+# Header search paths, as in upstream. Note that external/drm/ redirects the
+# DRM uAPI headers that upstream bundles to drm-uapi-helper and the system
+# kernel uAPI headers.
+#
+md = instrumentation/metrics_discovery
+iu = instrumentation/utils
+
+cc.poptions += "-I$src_pfx/$md/common/inc"                            \
+               "-I$src_pfx/$md/common/inc/internal"                   \
+               "-I$src_pfx/$md/common/inc/internal/concurrent_groups" \
+               "-I$src_pfx/$md/codegen"                               \
+               "-I$src_pfx/external/drm"                              \
+               "-I$src_pfx/$md/linux/inc"                             \
+               "-I$src_pfx/$iu/common/inc"                            \
+               "-I$src_pfx/$iu/linux/inc"                             \
+               "-I$src_pfx/inc/common"                                \
+               "-I$src_pfx/inc/common/instrumentation"                \
+               "-I$src_pfx/inc/common/instrumentation/api"
+
+# Export only the functions that md_exports.h marks with DllExport, as in
+# upstream.
+#
+cc.coptions += -fvisibility=hidden
+
+cxx.libs += -ldrm -pthread
 
 # Export options.
 #
-lib{metrics-discovery}:
+lib{igdmd}:
 {
-  cc.export.poptions = "-I$out_pfx" "-I$src_pfx"
   cc.export.libs = $intf_libs
 }
-
-#liba{metrics-discovery}: cc.export.poptions += -DLIBMETRICS_DISCOVERY_STATIC
-#libs{metrics-discovery}: cc.export.poptions += -DLIBMETRICS_DISCOVERY_SHARED
 
 # For pre-releases use the complete version to make sure they cannot
 # be used in place of another pre-release or the final version. See
 # the version module for details on the version.* variable values.
 #
-if $version.pre_release
-  lib{metrics-discovery}: bin.lib.version = "-$version.project_id"
-else
-  lib{metrics-discovery}: bin.lib.version = "-$version.major.$version.minor"
-
-# Install recreating subdirectories.
+# Otherwise match the upstream library name (libigdmd.so.MAJOR.MINOR.PATCH
+# with the libigdmd.so.MAJOR SONAME).
 #
-{hxx h}{*}:
-{
-  install         = include/
-  install.subdirs = true
-}
+if $version.pre_release
+  lib{igdmd}: bin.lib.version = "-$version.project_id"
+else
+  lib{igdmd}: bin.lib.version = "-$version.major.$version.minor" \
+    linux@"$version.major.$version.minor.$version.patch"
+
+# Don't install private headers.
+#
+{hxx h}{*}: install = false

@@ -1,3 +1,3 @@
-import libs = libmetrics-discovery%lib{metrics-discovery}
+import libs = libmetrics-discovery%lib{igdmd}
 
 exe{driver}: {hxx h cxx c}{**} $libs testscript{**}
