@@ -1,3 +1,15 @@
 import libs = libmetrics-discovery-headers%lib{metrics-discovery-headers}
 
 exe{driver}: {hxx cxx}{**} $libs testscript{**}
+
+# The upstream metrics_discovery_api.h header declares anonymous structs in
+# anonymous unions (an extension) and, with the MSVC ABI, enumerators outside
+# the int range, which Clang warns about.
+#
+if ($cxx.id.type == 'clang' || $cxx.id.variant == 'clang')
+{
+  cxx.coptions += -Wno-nested-anon-types
+
+  if ($cxx.target.class == 'windows')
+    cxx.coptions += -Wno-microsoft-enum-value
+}
