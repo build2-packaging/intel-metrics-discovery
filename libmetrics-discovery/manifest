@@ -14,3 +14,5 @@ package-url: https://github.com/build2-packaging/intel-metrics-discovery
 package-email: packaging@build2.org ; Mailing list.
 depends: * build2 >= 0.18.0
 depends: * bpkg >= 0.18.0
+depends: libmetrics-discovery-headers == $
+depends: libdrm-uapi-helper ^2.0.0-b.27
