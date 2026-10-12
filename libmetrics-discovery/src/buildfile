@@ -44,6 +44,26 @@ cc.poptions += "-I$src_pfx/$md/common/inc"                            \
 #
 cc.coptions += -fvisibility=hidden
 
+# Silence warnings about the upstream sources: multi-line comments (disabled
+# in upstream as well), anonymous structs, nested anonymous types, and
+# flexible array members (GCC has no narrower option for these than
+# -Wno-pedantic), and C function declarations without a prototype.
+#
+switch $cxx.id
+{
+  case 'gcc'
+  {
+    cc.coptions += -Wno-comment
+    cxx.coptions += -Wno-pedantic
+  }
+  case 'clang'
+  {
+    cxx.coptions += -Wno-gnu-anonymous-struct -Wno-nested-anon-types \
+                    -Wno-c99-extensions
+    c.coptions += -Wno-strict-prototypes
+  }
+}
+
 cxx.libs += -ldrm -pthread
 
 # Export options.
