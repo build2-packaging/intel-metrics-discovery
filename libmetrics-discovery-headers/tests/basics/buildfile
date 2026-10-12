@@ -1,0 +1,3 @@
+import libs = libmetrics-discovery-headers%lib{metrics-discovery-headers}
+
+exe{driver}: {hxx cxx}{**} $libs testscript{**}
