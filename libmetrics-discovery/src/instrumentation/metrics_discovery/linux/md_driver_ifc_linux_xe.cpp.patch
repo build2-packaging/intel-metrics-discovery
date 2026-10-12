@@ -1,0 +1,72 @@
+--- md_driver_ifc_linux_xe.cpp.orig	2026-10-12 03:04:08.586555700 +0200
++++ md_driver_ifc_linux_xe.cpp	2026-10-12 03:27:16.226634500 +0200
+@@ -10,6 +10,10 @@
+ //
+ //     Abstract:   C++ implementation for Linux with XE KMD
+ 
++#include "xe_drm_config.h"
++
++#ifdef INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OAM
++
+ #include "md_sub_devices_linux.h"
+ #include "md_driver_ifc_linux_xe.h"
+ #include "md_adapter.h"
+@@ -407,15 +411,20 @@
+                         drm_xe_engine_class_instance eci = {};
+                         eci.engine_class                 = DRM_XE_ENGINE_CLASS_GSC;
+                         eci.engine_instance              = DRM_XE_ENGINE_INSTANCE_GSC;
++#ifdef INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OA_UNIT_GT_ID
+                         eci.gt_id                        = m_xeObservationCapabilities.IsGtIdSupported
+                                                    ? oaUnit.gt_id
+                                                    : currentRenderGtId + 1; // GSC engine is always on the media GT ID.
++#else
++                        eci.gt_id                        = currentRenderGtId + 1; // GSC engine is always on the media GT ID.
++#endif
+ 
+                         engines.emplace_back( oaUnit.oa_unit_id, eci );
+ 
+                         break;
+                     }
+ 
++#ifdef INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OA_UNIT_GT_ID
+                     case DRM_XE_OA_UNIT_TYPE_MERT: // MERT is not related to any engine.
+                     {
+                         // MERT unit is not attached to any engine, but it is still a valid unit, so we create a dummy MERT engine for it.
+@@ -430,6 +439,7 @@
+ 
+                         break;
+                     }
++#endif
+ 
+                     default:
+                         MD_LOG_A( m_adapterId, LOG_DEBUG, "OA unit %u has no engines", oaUnit.oa_unit_id );
+@@ -1181,7 +1191,9 @@
+                 case DRM_XE_OA_UNIT_TYPE_OAG:
+                     m_xeObservationCapabilities.IsConfigurableOaBufferSize    = oaUnit.capabilities & DRM_XE_OA_CAPS_OA_BUFFER_SIZE;
+                     m_xeObservationCapabilities.IsOaNotifyNumReportsSupported = oaUnit.capabilities & DRM_XE_OA_CAPS_WAIT_NUM_REPORTS;
++#ifdef INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OA_UNIT_GT_ID
+                     m_xeObservationCapabilities.IsGtIdSupported               = oaUnit.capabilities & DRM_XE_OA_CAPS_OA_UNIT_GT_ID;
++#endif
+ 
+                     MD_LOG_A( m_adapterId, LOG_INFO, "Configurable OA buffer size is%s supported", m_xeObservationCapabilities.IsConfigurableOaBufferSize ? "" : " not" );
+                     MD_LOG_A( m_adapterId, LOG_INFO, "Oa notify num reports is%s supported", m_xeObservationCapabilities.IsOaNotifyNumReportsSupported ? "" : " not" );
+@@ -1200,11 +1212,13 @@
+                     MD_LOG_A( m_adapterId, LOG_INFO, "OAM SAG is%s supported", m_xeObservationCapabilities.IsOamSagSupported ? "" : " not" );
+                     break;
+ 
++#ifdef INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OA_UNIT_GT_ID
+                 case DRM_XE_OA_UNIT_TYPE_MERT:
+                     m_xeObservationCapabilities.IsOaMertSupported = true;
+ 
+                     MD_LOG_A( m_adapterId, LOG_INFO, "OA MERT is%s supported", m_xeObservationCapabilities.IsOaMertSupported ? "" : " not" );
+                     break;
++#endif
+ 
+                 default:
+                     MD_LOG_A( m_adapterId, LOG_DEBUG, "Unknown OA unit type: %u", oaUnit.oa_unit_type );
+@@ -2462,3 +2476,5 @@
+     }
+ 
+ } // namespace MetricsDiscoveryInternal
++
++#endif // INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OAM
