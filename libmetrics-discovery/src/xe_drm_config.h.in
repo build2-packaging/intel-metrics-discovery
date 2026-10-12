@@ -1,0 +1,7 @@
+/* The system kernel xe uAPI (<drm/xe_drm.h>) available to the xe kernel mode
+ * driver interface (see build/autoconf/checks/ for details).
+ */
+#pragma once
+
+#undef INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OAM
+#undef INTEL_METRICS_DISCOVERY_HAVE_DRM_XE_OA_CAPS_OA_UNIT_GT_ID
