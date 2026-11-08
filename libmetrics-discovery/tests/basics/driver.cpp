@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #include <metrics_discovery_api.h>
 
 #undef NDEBUG
@@ -28,24 +30,48 @@ int main ()
             CC_ERROR_INVALID_PARAMETER);
   }
 
-  // Adapter group. Opening it fails without a supported GPU, so only check
-  // the group if it could be opened.
+  // Adapter group. Opening it fails without a supported GPU, so print the
+  // adapters if present and skip otherwise.
   //
   {
     IAdapterGroupLatest* g (nullptr);
     TCompletionCode r (OpenAdapterGroup (&g));
 
-    if (r == CC_OK || r == CC_ALREADY_INITIALIZED)
+    if (r != CC_OK && r != CC_ALREADY_INITIALIZED)
     {
-      assert (g != nullptr);
-
-      const TAdapterGroupParamsLatest* p (g->GetParams ());
-      assert (p != nullptr);
-      assert (p->Version.MajorNumber == MD_API_MAJOR_NUMBER_CURRENT);
-
-      assert (g->Close () == CC_OK);
+      std::printf ("OpenAdapterGroup: %d, skipping GPU info\n", r);
+      return 0;
     }
-    else
-      assert (r > CC_OK && r < CC_LAST_1_0);
+
+    assert (g != nullptr);
+
+    const TAdapterGroupParamsLatest* p (g->GetParams ());
+    assert (p != nullptr);
+    assert (p->Version.MajorNumber == MD_API_MAJOR_NUMBER_CURRENT);
+
+    if (p->AdapterCount == 0)
+    {
+      std::printf ("OpenAdapterGroup: %d, 0 adapter(s), skipping GPU info\n",
+                   r);
+      assert (g->Close () == CC_OK);
+      return 0;
+    }
+
+    for (uint32_t i (0); i != p->AdapterCount; ++i)
+    {
+      IAdapterLatest* a (g->GetAdapter (i));
+      assert (a != nullptr);
+
+      const TAdapterParamsLatest* ap (a->GetParams ());
+      assert (ap != nullptr);
+      assert (ap->ShortName != nullptr);
+
+      std::printf ("%s (vendor 0x%04X device 0x%04X)\n",
+                   ap->ShortName,
+                   static_cast<unsigned int> (ap->VendorId),
+                   static_cast<unsigned int> (ap->DeviceId));
+    }
+
+    assert (g->Close () == CC_OK);
   }
 }
