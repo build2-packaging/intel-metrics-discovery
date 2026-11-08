@@ -1,0 +1,10 @@
+--- md_concurrent_group.h.orig	2026-11-07 15:39:06.024187727 +0100
++++ md_concurrent_group.h	2026-11-08 18:21:12.711688707 +0100
+@@ -16,6 +16,7 @@
+ #include "md_types.h"
+ 
+ #include <cstdio>
++#include <new>
+ #include <vector>
+ #include <list>
+ #include <string>
