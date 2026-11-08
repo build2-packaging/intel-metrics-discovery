@@ -1,6 +1,6 @@
 : 1
 name: libmetrics-discovery-headers
-version: 1.16.197-a.0.z
+version: 1.16.197
 type: lib,binless
 language: c++
 project: intel-metrics-discovery
