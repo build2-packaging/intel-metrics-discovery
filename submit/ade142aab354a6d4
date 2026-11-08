@@ -1,0 +1,8 @@
+: 1
+name: libmetrics-discovery
+version: 1.16.197
+language: c++
+language: c
+project: intel-metrics-discovery
+summary: Intel Metrics Discovery API (MDAPI) C++ library
+license: MIT; MIT License.
